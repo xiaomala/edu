@@ -1,0 +1,131 @@
+{include file='public/top' /}
+
+{block name='seo'}
+<title>{$title|default="标题"}</title>
+<meta name="keywords" content="{$keywords|default='关键字'}">
+<meta name="description" content="{$desc|default='描述'}">
+{/block}
+
+{block name='content'}
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 首页
+    <span class="c-gray en">&gt;</span> 权限管理
+    <span class="c-gray en">&gt;</span> 权限列表
+    <a class="btn btn-success btn-refresh radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+    <div class="Hui-article">
+       <article class="cl pd-20">
+          <div class="cl pd-5 bg-1 bk-gray mt-20">
+             <span class="l">
+                  <a href="javascript:void(0);" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+                  <a href="javascript:void(0);" onclick="member_add('添加权限','{:url("privilege/add")}','','510')" class="btn btn-primary radius">
+                    <i class="Hui-iconfont">&#xe600;</i>添加权限
+                  </a>
+             </span>
+          </div>
+          <div class="article-class-list cl mt-20">
+            <table class="table table-border table-bordered table-hover table-bg">
+              <thead>
+                <tr class="text-c">
+                  <th width="25"><input type="checkbox" name="" value=""></th>
+                  <th width="50">ID</th>
+                  <th width="100">权限名称</th>
+                  <th width="80">模块名称</th>
+                  <th width="80">控制器名称</th>
+                  <th width="80">方法名称</th>
+                  <th width="70">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($data as $k => $v){ ?>
+                  <tr class="text-c">
+                    <td><input type="checkbox" name="id" value="id"></td>
+                    <td>{$v.id}</td>
+                    <td style="text-align:left"><?php echo str_repeat('&nbsp;-&nbsp;',4*$v['level']); ?><?php echo $v['pri_name']; ?></td>
+                    <td>{$v.module_name}</td>
+                    <td>{$v.controller_name}</td>
+                    <td>{$v.action_name}</td>
+                    <td class="f-14">
+                      <a title="编辑" href="javascript:void(0);" onclick="member_edit('权限编辑','{:url("privilege/edit",["id"=>$v["id"]])}','','510')" class="ml-5" style="text-decoration:none">
+                        <i class="Hui-iconfont">&#xe6df;</i>
+                      </a>
+                      <a title="删除" href="javascript:void(0);" onclick="is_del(this,'{$v.id}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+                    </td>
+                  </tr>
+                <?php } ?>
+              </tbody>
+            </table>
+          </div>
+      </article>
+    </div>
+</div>
+{/block}
+
+
+{include file='public/footer' /}
+
+{block name='js'}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.contextmenu/jquery.contextmenu.r2.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/laypage/1.2/laypage.js"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    $('.table-sort tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+});
+
+
+/*用户-添加*/
+function member_add(title,url,w,h){
+    layer_show(title,url,w,h);
+}
+
+
+/*用户-查看*/
+function member_show(title,url,id,w,h){
+    layer_show(title,url,w,h);
+}
+
+
+/*用户-编辑*/
+function member_edit(title,url,w,h){
+    $.get(url); //执行控制器中的编辑操作
+    layer_show(title,url,w,h);
+}
+
+
+/*删除*/
+function is_del(obj,id)
+{
+  layer.confirm('确认要删除吗？',function(index){
+      $.ajax({
+        type: 'POST',
+        url: "{:url('privilege/delete')}",
+        data : {id:id},
+        dataType: 'json',
+        success: function(data){
+          $(obj).parents("tr").remove();
+          layer.msg('已删除!',{icon:1,time:1000});
+        },
+        error:function(data) {
+          console.log(data.msg);
+        },
+      });
+  });
+}
+</script>
+{/block}
+
+</body>
+</html>

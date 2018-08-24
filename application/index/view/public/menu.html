@@ -1,0 +1,19 @@
+<aside class="Hui-aside">
+    <input runat="server" id="divScrollValue" type="hidden" value="" />
+    <div class="menu_dropdown bk_2">
+        <?php foreach($menu_list as $k=>$vo){ ?>
+        <dl id="menu-{$vo.id}">
+            <dt><i class="Hui-iconfont">&#xe62e;</i>&nbsp;{$vo.pri_name}<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+            <dd>
+                <ul>
+                    <?php foreach( $vo['children'] as $kk => $v){ ?>
+                    <li><a _href="<?php echo url($v['module_name'].'/'.$v['controller_name'].'/'.$v['action_name'])?>" data-title="{$v.pri_name}" href="javascript:void(0);" >{$v.pri_name}</a></li>
+                    <?php } ?>
+                </ul>
+            </dd>
+        </dl>
+        <?php } ?>
+    </div>
+</aside>
+<div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+<!--/_menu 作为公共模版分离出去-->

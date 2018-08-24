@@ -1,0 +1,103 @@
+{include file='public/top' /}
+
+{block name='seo'}
+<title>{$title|default="编辑权限"}</title>
+<meta name="keywords" content="{$keywords|default='关键字'}">
+<meta name="description" content="{$desc|default='描述'}">
+{/block}
+
+
+{block name='content'}
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-grade-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">上一级：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+			<span class="select-box" style="width:150px;">
+				<select class="select" name="parent_id" size="1">
+					<option value="0">顶级权限</option>
+					<?php foreach($parentData as $vo){ ?>
+						<option {if condition="$vo['id'] eq $data['parent_id']"}selected{/if} value="<?php echo $vo['id']; ?>"><?php echo str_repeat('-', 8*$vo['level']).$vo['pri_name']; ?></option>
+					<?php } ?>
+				</select>
+			</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{$data.pri_name}" placeholder="" id="pri_name" name="pri_name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>模块名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{$data.module_name}" placeholder="" id="module_name" name="module_name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>控制器名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{$data.controller_name}" placeholder="" id="controller_name" name="controller_name">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>方法名称：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="{$data.action_name}" placeholder="" id="action_name" name="action_name">
+			</div>
+		</div>
+
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input type="hidden" name="id" value="<?php echo $data['id']; ?>" />
+                <input class="btn btn-primary radius disabled" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;" id="submit" >
+            </div>
+        </div>
+	</form>
+</article>
+{/block}
+
+
+{include file="public/footer" /}
+
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+<script>
+
+    $(function(){
+        //当用户修改了输入框内容时才触发
+        $("form").children().change(function(){
+            $("#submit").removeClass('disabled');
+        });
+
+
+        //ajax方式提交当前表单数据
+        $("#submit").on("click", function(event){
+            $.ajax({
+                type: "POST",
+                url: "{:url('privilege/doEdit')}",
+                data: $("#form-grade-add").serialize(),
+                dataType: "json",
+                success: function(data){
+                    if (data.status == 1) {
+                        alert(data.message);
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.$('.btn-refresh').click();
+                        parent.layer.close(index);
+                    } else {
+                        alert(data.message);
+
+                    }
+                }
+            });
+
+        })
+    })
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

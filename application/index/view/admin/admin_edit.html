@@ -1,0 +1,129 @@
+{include file='public/top'/}
+
+{block name='seo'}
+<title>{$title|default="标题"}</title>
+<meta name="keywords" content="{$keywords|default='关键字'}">
+<meta name="description" content="{$desc|default='描述'}">
+{/block}
+
+{block name='content'}
+<article class="cl pd-20">
+	<form action="" method="post" class="form form-horizontal" id="form-admin-add">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+
+				{eq name="$admin_info.username" value="admin"} <!--如果用户名是admin,不允许修改-->
+				<input  type="text" class="input-text disabled" value="{$admin_info.username}" placeholder="" id="username" name="username">
+				{else /}
+				{eq name="$Think.session.admin_info.username" value="$admin_info.username" }
+				<input  type="text" class="input-text disabled" value="{$admin_info.username}" placeholder="" id="username" name="username">
+				{else /}
+				<input  type="text" class="input-text" value="{$admin_info.username}" placeholder="" id="username" name="username">
+				{/eq}
+				{/eq}
+
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>新密码：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="password" class="input-text" autocomplete="off" value="" style="width:200px;"  placeholder="密码为6位" id="password" name="password">
+                <span>留空则不修改密码</span>
+			</div>
+		</div>
+
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">角色：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+				<span class="select-box" style="width:150px;">
+					<select class="select" name="role_id" size="1">
+                        <?php foreach($role as $vo){ ?>
+                            <option {if condition="$vo['id'] eq $rid"}selected{/if} value="{$vo.id}">{$vo.role_name}</option>
+                        <?php } ?>
+                    </select>
+				</span>
+            </div>
+        </div>
+
+		{eq name="$Think.session.admin_info.username" value="admin"}
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3">启用状态：</label>
+			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
+				<select class="select" name="status" size="1">
+					<option value="1" >启用</option>
+					<option value="0" selected>不启用</option>
+				</select>
+				</span>
+			</div>
+		</div>
+		{/eq}
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮箱：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" placeholder="@" name="email" id="email" value="{$admin_info.email}">
+			</div>
+		</div>
+
+		<!--将当前记录的id做为隐藏域发送到服务器-->
+		<input type="hidden" value="{$admin_info.id}" name="id">
+
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+				<input class="btn btn-primary radius disabled" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;" id="submit" >
+			</div>
+		</div>
+	</form>
+</article>
+{/block}
+
+
+{include file='public/footer' /}
+
+
+{block name='js'}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/validate-methods.js"></script>
+<script type="text/javascript" src="__STATIC__/admin/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+
+
+
+
+<script>
+
+	$(function(){
+
+	    $("form").children().change(function(){
+	        $("#submit").removeClass('disabled');
+		});
+
+        $("#submit").on("click", function(event){
+            $.ajax({
+				type: "POST",
+				url: "{:url('admin/editUser')}",
+				data: $("#form-admin-add").serialize(),
+				dataType: "json",
+				success: function(data){
+				    if (data.status == 1) {
+						layer.msg(data.message,{icon:1});
+					} else {
+                        layer.msg(data.message,{icon:2});
+
+					}
+				}
+			});
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.$('.btn-refresh').click();
+            parent.layer.close(index);
+
+		});
+
+	})
+</script>
+{/block}
+
+</body>
+</html>
